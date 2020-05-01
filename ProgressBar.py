@@ -1,14 +1,17 @@
-import time, sys
+import time, sys, os
+
+# TO USE IN YOUR CODE
+#from folder.ProgressBar import ProgressBar
 
 class ProgressBar:
   def __init__(self,
-              pretext="",
-              progresschar="-",
-              loadingchars=r"\-/|",
-              startendchar="[]",
-              barwidth=int(100/3),
-              displaypercentage=False,
-              displaycount=False
+              pretext="", # Test to print before the bar
+              progresschar="-", # Character to show progress
+              loadingchars=r"\|/", # Last character of bar moving as bar loads (moves even if no progress)
+              startendchar="[]", # Characters going around the bar
+              barwidth=int(os.get_terminal_size().columns/2), # Length of the bar in characters (does not include what's around the bar)
+              displaypercentage=False, # Show percentage as well or not
+              displaycount=False # Show count as well or not
               ):
     self.pretext = str(pretext)
     self.progresschar = str(progresschar)
@@ -26,13 +29,35 @@ class ProgressBar:
     self.loadingcharsindex = 0
     self.firstprint = True
   
-  # Function to link to a thread
-  def inThread(self, number, total, updateperiod=0.1):
-    while(progressnumber.value != total):
-      self.print(False,number.value,total)
-      time.sleep(float(updateperiod))
-    self.print(False,total,total)
 
+  # Role : print the progress bar as an independent thread
+  # Arguments:
+  #   number: multiprocessing.Value
+  #   total: value to reach
+  #   updateperiod: refresh period of progress bar in seconds
+  # Example:
+  #   number = multiprocessing.Value("i", 0)
+  #   total = 30
+  #   progressbar = ProgressBar()
+  #-> multiprocessing.Process(target=progressbar.inThread, args=(number,total,0.1))
+  #   for i in range(0,total)
+  #     number.value = i
+  def inThread(self, number, total, updateperiod=0.1):
+    while(number.value != total):
+      self.print(number.value,total)
+      time.sleep(float(updateperiod))
+    self.print(total,total)
+
+
+  # Role : print the progress bar
+  # Arguments:
+  #   number: progress value
+  #   total: maximum value
+  # Example:
+  #   total = 30
+  #   progressbar = ProgressBar()
+  #   for i in range(0,total):
+  #->   progressbar.print(i, total)
   def print(self,number,total):
     barstring = ""
 
@@ -47,23 +72,26 @@ class ProgressBar:
 
     # Progress bar
     #Start char
-    barstring += self.startendchar[0]
+    if self.startendchar:
+      barstring += self.startendchar[0]
     #Current state of affairs
     sofarbar = int( (number/total)*self.barwidth )
     remainingbar = self.barwidth - sofarbar
-    #If loading chars, make sure there's space to print it
-    if self.loadingchars != "" and sofarbar > 0:
-      sofarbar -= 1
     #Add progress chars
     barstring += sofarbar*self.progresschar
-    #If loading chars, print loading chars and go to next one
-    if self.loadingchars != "":
-      barstring += self.loadingchars[self.loadingcharsindex])
+    #If loading chars, print loading chars and go to next one (unless 100%)
+    if self.loadingchars != "" and number != total:
+      barstring += self.loadingchars[self.loadingcharsindex]
       self.loadingcharsindex = (self.loadingcharsindex+1) % len(self.loadingchars)
-    #Add remaining gap 
+      remainingbar -= 1
+    #Add remaining gap
     barstring += remainingbar*" "
     #End char
-    barstring += self.startendchar[0]
+    if self.startendchar:
+      if len(self.startendchar) >= 2:
+        barstring += self.startendchar[1]
+      else:
+        barstring += self.startendchar[0]
 
     # Post progress bar
     if self.displaypercentage:
