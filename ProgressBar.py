@@ -5,7 +5,7 @@ import time, sys, os
 
 class ProgressBar:
   def __init__(self,
-              pretext="", # Test to print before the bar
+              pretext="", # Text to print before the bar
               progresschar="-", # Character to show progress
               loadingchars=r"\|/", # Last character of bar moving as bar loads (moves even if no progress)
               startendchar="[]", # Characters going around the bar
@@ -32,33 +32,35 @@ class ProgressBar:
 
   # Role : print the progress bar as an independent thread
   # Arguments:
-  #   number: multiprocessing.Value
-  #   total: value to reach
+  #   number: progress value (type multiprocessing.Value of int)
+  #   max: value to reach (int)
   #   updateperiod: refresh period of progress bar in seconds
   # Example:
   #   number = multiprocessing.Value("i", 0)
-  #   total = 30
+  #   max = 30
   #   progressbar = ProgressBar()
-  #-> multiprocessing.Process(target=progressbar.inThread, args=(number,total,0.1))
-  #   for i in range(0,total)
+  #-> multiprocessing.Process(target=progressbar.inThread, args=(number,max,0.1))
+  #   for i in range(0,max)
   #     number.value = i
-  def inThread(self, number, total, updateperiod=0.1):
-    while(number.value != total):
-      self.print(number.value,total)
+  #     time.sleep(1)
+  def inThread(self, number, max, updateperiod=0.1):
+    while(number.value != max):
+      self.print(number.value,max)
       time.sleep(float(updateperiod))
-    self.print(total,total)
+    self.print(max,max)
 
 
   # Role : print the progress bar
   # Arguments:
-  #   number: progress value
-  #   total: maximum value
+  #   number: progress value (int)
+  #   max: maximum value (int)
   # Example:
-  #   total = 30
+  #   max = 30
   #   progressbar = ProgressBar()
-  #   for i in range(0,total):
-  #->   progressbar.print(i, total)
-  def print(self,number,total):
+  #   for i in range(0,max):
+  #->   progressbar.print(i, max)
+  #     time.sleep(1)
+  def print(self,number,max):
     barstring = ""
 
     # No carriage return on first print
@@ -75,12 +77,12 @@ class ProgressBar:
     if self.startendchar:
       barstring += self.startendchar[0]
     #Current state of affairs
-    sofarbar = int( (number/total)*self.barwidth )
+    sofarbar = int( (number/max)*self.barwidth )
     remainingbar = self.barwidth - sofarbar
     #Add progress chars
     barstring += sofarbar*self.progresschar
     #If loading chars, print loading chars and go to next one (unless 100%)
-    if self.loadingchars != "" and number != total:
+    if self.loadingchars != "" and number != max:
       barstring += self.loadingchars[self.loadingcharsindex]
       self.loadingcharsindex = (self.loadingcharsindex+1) % len(self.loadingchars)
       remainingbar -= 1
@@ -95,9 +97,9 @@ class ProgressBar:
 
     # Post progress bar
     if self.displaypercentage:
-      barstring += " %d%%" % int(number*100/total)
+      barstring += " %d%%" % int(number*100/max)
     if self.displaycount:
-      barstring += " (%d/%d)" % (number,total)
+      barstring += " (%d/%d)" % (number,max)
 
     # Print the bar out
     sys.stdout.write(barstring)
