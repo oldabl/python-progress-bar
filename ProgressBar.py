@@ -5,10 +5,10 @@ import time, sys, os
 
 class ProgressBar:
   def __init__(self,
-              pretext="", # Text to print before the bar
-              progresschar="-", # Character to show progress
-              loadingchars=r"\|/", # Last character of bar moving as bar loads (moves even if no progress)
-              startendchar="[]", # Characters going around the bar
+              pretext=r"", # Text to print before the bar
+              progresschar=r"█", # Character to show progress
+              loadingchars=r"█▓▒░▒▓", # Last character of bar moving as bar loads (moves even if no progress)
+              startendchar=r"||", # Characters going around the bar
               barwidth=int(os.get_terminal_size().columns/2), # Length of the bar in characters (does not include what's around the bar)
               displaypercentage=False, # Show percentage as well or not
               displaycount=False # Show count as well or not
