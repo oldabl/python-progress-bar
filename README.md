@@ -37,7 +37,7 @@ for i in range(0,max)
 You can give the following optional arguments to the ProgressBar constructor:
 - pretext: Text to print before the bar (default "")
 - progresschar: Character to show progress (default '-')
-- loadingchars: Last character of bar moving as bar loads (moves even if no progress) (default "\|/")
+- loadingchars: Last character of bar moving as bar loads (moves even if no progress) (default "\\|/")
 - startendchar: Characters going around the bar (default "[]")
 - barwidth: Length of the bar in characters (does not include optionally printed pretext, progresschar, percentage and count) (default terminal width/2)
 - displaypercentage: Show percentage as well or not (default False)
