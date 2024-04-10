@@ -16,7 +16,7 @@ Now use as class ProgressBar.
 max = 30
 progressbar = ProgressBar()
 for n in range(0,max):
-  progressbar.print(n,max)
+  progressbar.print(n,max-1)
   time.sleep(1) # To see progress
 ```
 
@@ -25,7 +25,7 @@ for n in range(0,max):
 max = 30
 progressbar = ProgressBar()
 number = multiprocessing.Value("i", 0)
-pr = multiprocessing.Process(target=progressbar.inThread, args=(number,max))
+pr = multiprocessing.Process(target=progressbar.inThread, args=(number,max-1))
 pr.start()
 # YOUR CODE GOES BELOW
 # It needs to increment the ProgressBar number
