@@ -1,11 +1,11 @@
 import time, sys, os
 
-# TO USE IN YOUR CODE
-#from folder.ProgressBar import ProgressBar
-
 # Class: ProgressBar
-# Role: Set progress bar parameters and define its printing functions
+# Role: print a progress bar with next to no
+#  line of code required by user
 class ProgressBar:
+
+  # Role : assign arguments to internal values
   def __init__(self,
               pretext=r"", # Text to print before the bar
               progresschar=r"█", # Character to show progress
@@ -28,38 +28,24 @@ class ProgressBar:
     # Private
     self.loadingcharsindex = 0
     self.firstprint = True
-  
 
-  # Role : print the progress bar as an independent thread
+  
+  # Role : prints the progress bar as an independent thread
   # Arguments:
-  #   number: progress value (type multiprocessing.Value of int)
-  #   max: value to reach (int)
-  #   updateperiod: refresh period of progress bar in seconds
-  # Example:
-  #   number = multiprocessing.Value("i", 0)
-  #   max = 30
-  #   progressbar = ProgressBar()
-  #-> multiprocessing.Process(target=progressbar.inThread, args=(number,max,0.1))
-  #   for i in range(0,max)
-  #     number.value = i
-  #     time.sleep(1)
+  # - number: progress value (type multiprocessing.Value of int)
+  # - max: value to reach (int)
+  # - updateperiod: refresh period of progress bar in seconds
   def inThread(self, number, max, updateperiod=0.1):
     while(number.value != max):
       self.print(number.value,max)
       time.sleep(float(updateperiod))
     self.print(max,max)
 
-
-  # Role : print the progress bar
+  
+  # Role : prints the progress bar inline
   # Arguments:
-  #   number: progress value (int)
-  #   max: maximum value (int)
-  # Example:
-  #   max = 30
-  #   progressbar = ProgressBar()
-  #   for i in range(0,max):
-  #->   progressbar.print(i, max)
-  #     time.sleep(1)
+  # - number: progress value (int)
+  # - max: maximum value (int)
   def print(self,number,max):
     barstring = ""
 
@@ -73,22 +59,23 @@ class ProgressBar:
       barstring += self.pretext
 
     # Progress bar
-    #Start char
+    #
+    # Start char
     if self.startendchar:
       barstring += self.startendchar[0]
-    #Current state of affairs
+    # Current state of affairs
     sofarbar = int( (number/max)*self.barwidth )
     remainingbar = self.barwidth - sofarbar
-    #Add progress chars
+    # Add progress chars
     barstring += sofarbar*self.progresschar
-    #If loading chars, print loading chars and go to next one (unless 100%)
+    # If loading chars, print loading chars and go to next one (unless 100%)
     if self.loadingchars != "" and number != max:
       barstring += self.loadingchars[self.loadingcharsindex]
       self.loadingcharsindex = (self.loadingcharsindex+1) % len(self.loadingchars)
       remainingbar -= 1
-    #Add remaining gap
+    # Add remaining gap
     barstring += remainingbar*self.remainingbarchar
-    #End char
+    # End char
     if self.startendchar:
       if len(self.startendchar) >= 2:
         barstring += self.startendchar[1]
